@@ -6,14 +6,19 @@ import (
 )
 
 func init() {
-	rootCmd.AddCommand(addCommand)
+	rootCmd.AddCommand(urlCommand)
 }
 
-var versionCmd = &cobra.Command{
+var urlCommand = &cobra.Command{
 	Use:   "url",
-	Short: "to url tagName parameter",
+	Short: "to url tagName [parameter], opens url configured with tagName",
 	Long:  `Opens a url configured in tagName with parameter replacing the TAG`,
+	Args:  cobra.MinimumNArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
-		url.Go(args[0], args[1])
+		tag := ""
+		if len(args) == 2 {
+			tag = args[1]
+		}
+		url.Go(args[0], tag)
 	},
 }

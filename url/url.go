@@ -15,12 +15,16 @@ type Tags struct {
 }
 
 func Go(url, tag string) {
+
 	tags := getTags()
 
 	if val, ok := tags.Tags[url]; ok {
 
 		finalUrl := strings.Replace(val, "{TAG}", tag, 1)
-		browser.OpenURL(finalUrl)
+		err := browser.OpenURL(finalUrl)
+		if err != nil {
+			fmt.Printf("error opening browser %+v\n", err)
+		}
 	}
 }
 
@@ -46,7 +50,20 @@ func getTags() *Tags {
 	}
 	return tags
 }
+func saveTags(tags *Tags) {
+	defaultText, _ := yaml.Marshal(tags)
+	path, _ := homedir.Expand(("~\\.to\\shortcuts.yml"))
+	os.WriteFile(path, defaultText, os.ModeAppend)
+}
 
 func Add(tag, url string) {
+	existingTags := getTags()
+
+	if existing, ok := existingTags.Tags[tag]; ok {
+		fmt.Printf("%v already exists with value %v, it will be replaced by %v", tag, existing, url)
+	}
+
+	existingTags.Tags[tag] = url
+	saveTags(existingTags)
 
 }
