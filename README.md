@@ -3,14 +3,15 @@
 This tool allows you to configure and visit urls with some different characters as parameter.
 
 ## Build
-1. On windows run `choco install make`
-2. run `make` from command line in the root folder
+1. Install golang 
+2. On windows run `choco install make`
+3. run `make` from command line in the root folder
 
 ## Installation
 1. Install golang 
 2. Run 
 ```shell
-go install go install github.com/jigargandhi/to@latest
+go install github.com/jigargandhi/to@latest
 ```
 
 ## Example
