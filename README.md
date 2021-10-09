@@ -2,6 +2,10 @@
 
 This tool allows you to configure and visit urls with some different characters as parameter.
 
+## Build
+1. On windows run `choco install make`
+2. run `make` from command line in the root folder
+
 ## Installation
 1. Install golang 
 2. Run 
