@@ -19,7 +19,8 @@ tags:
 		os.Remove(tempFileFullPath)
 	})
 
-	os.WriteFile(tempFileFullPath, []byte(data), fs.FileMode(os.O_CREATE))
+	err := os.WriteFile(tempFileFullPath, []byte(data), fs.FileMode(os.O_CREATE))
+	assert.Nil(t, err)
 	tags := getTagsFromFile(tempFileFullPath)
 
 	assert.NotNil(t, tags)

@@ -11,8 +11,8 @@ var rootCmd = &cobra.Command{
 	Use:   "to",
 	Short: "A command line shortcut visitor",
 	Long:  `A command line shortcut visitor that allows you to visit parameterized urls very fast.`,
-	Run: func(cmd *cobra.Command, args []string) {
-		cmd.Help()
+	RunE: func(cmd *cobra.Command, args []string) error {
+		return cmd.Help()
 	},
 }
 

@@ -5,6 +5,8 @@ import (
 	"os"
 	"strings"
 
+	uri "net/url"
+
 	"github.com/mitchellh/go-homedir"
 	"github.com/pkg/browser"
 	"gopkg.in/yaml.v2"
@@ -12,6 +14,7 @@ import (
 
 var (
 	defaultFilePath = "~\\.to\\shortcuts.yml"
+	placeholder     = "{TAG}"
 )
 
 type Tags struct {
@@ -24,7 +27,7 @@ func Go(tag_name, parameter string) {
 
 	if val, ok := tags.Tags[tag_name]; ok {
 
-		finalUrl := strings.Replace(val, "{TAG}", parameter, 1)
+		finalUrl := safeReplace(val, parameter)
 		err := browser.OpenURL(finalUrl)
 		if err != nil {
 			fmt.Printf("error opening browser %+v\n", err)
@@ -37,10 +40,29 @@ func Go(tag_name, parameter string) {
 	}
 }
 
+func safeReplace(url, parameter string) string {
+	finalUrl := strings.Replace(url, placeholder, parameter, 1)
+	parsedUri, err := uri.Parse(url)
+
+	if err != nil {
+		return finalUrl
+	}
+
+	if strings.Index(parsedUri.Fragment, placeholder) > 0 {
+		return strings.Replace(url, placeholder, uri.PathEscape(parameter), 1)
+	}
+
+	if strings.Index(parsedUri.RawQuery, placeholder) > 0 {
+		return strings.Replace(url, placeholder, uri.QueryEscape(parameter), 1)
+	}
+
+	return finalUrl
+}
+
 func selectTagValue(tag *Tags, input string) []string {
 	matching := make([]string, 0)
 
-	for k, _ := range tag.Tags {
+	for k := range tag.Tags {
 		if strings.Index(k, input) == 0 || levensteinDistance(input, k) <= 3 {
 			matching = append(matching, k)
 		}
@@ -58,7 +80,10 @@ func getTagsFromFile(filePath string) *Tags {
 		case *os.PathError:
 			fmt.Printf("ERROR: %v\n", e)
 			defaultText, _ := yaml.Marshal(&Tags{})
-			os.WriteFile(path, defaultText, os.ModeAppend)
+			err = os.WriteFile(path, defaultText, os.ModeAppend)
+			if err != nil {
+				fmt.Printf("error saving tags: %v", err)
+			}
 		default:
 			fmt.Println("Unknown error occurred")
 			return nil
@@ -75,7 +100,10 @@ func getTagsFromFile(filePath string) *Tags {
 func saveTags(tags *Tags, filePath string) {
 	defaultText, _ := yaml.Marshal(tags)
 	path, _ := homedir.Expand(filePath)
-	os.WriteFile(path, defaultText, os.ModeAppend)
+	err := os.WriteFile(path, defaultText, os.ModeAppend)
+	if err != nil {
+		fmt.Printf("error saving tags: %v", err)
+	}
 }
 
 func Add(tag, url string) {
