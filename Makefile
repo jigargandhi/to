@@ -7,4 +7,4 @@ lint:
 	golangci-lint run 
 
 build: lint test
-	go build -ldflags="-X 'github.com/jigargandhi/to/version.version=v0.1' -X 'github.com/jigargandhi/to/version.commit=$(commit)'"
+	go build -ldflags="-X 'github.com/jigargandhi/to/version.version=v0.2' -X 'github.com/jigargandhi/to/version.commit=$(commit)'"
